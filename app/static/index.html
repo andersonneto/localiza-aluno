@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Localiza Aluno</title>
+<meta name="description" content="Cruza alunos não localizados do Sistema Presença (Bolsa Família) com as matrículas do Gestor Escolar.">
+<meta name="theme-color" content="#548235">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23548235'/%3E%3Ccircle cx='14' cy='14' r='6' fill='none' stroke='white' stroke-width='3'/%3E%3Cpath d='M19 19l7 7' stroke='%23FFF2CC' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff" fill-opacity=".16"/><circle cx="14" cy="14" r="6" fill="none" stroke="#fff" stroke-width="3"/><path d="M19 19l7 7" stroke="#FFF2CC" stroke-width="3.4" stroke-linecap="round"/></svg>
+      <div>
+        <h1>Localiza Aluno</h1>
+        <p>Sistema Presença × Gestor Escolar</p>
+      </div>
+    </div>
+    <button id="btn-limpar" class="btn ghost light" type="button" hidden>Nova consulta</button>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Seções">
+    <button role="tab" class="tab" data-tab="dados" aria-selected="true">Dados</button>
+    <button role="tab" class="tab" data-tab="pbf" disabled>Sistema Presença <span class="n" data-n="pbf"></span></button>
+    <button role="tab" class="tab" data-tab="ge" disabled>Gestor Escolar <span class="n" data-n="ge"></span></button>
+    <button role="tab" class="tab" data-tab="localizados" disabled>Alunos localizados <span class="n" data-n="localizados"></span></button>
+    <button role="tab" class="tab" data-tab="nao-localizados" disabled>Alunos não localizados <span class="n" data-n="nao-localizados"></span></button>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ DADOS ============ -->
+  <section id="panel-dados" class="panel" role="tabpanel">
+    <div class="card">
+      <label class="field inline" for="mes">
+        <span>Mês de referência</span>
+        <input id="mes" type="text" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="MM/AAAA" aria-describedby="mes-hint">
+        <small id="mes-hint">mm/aaaa — aparece no título do relatório; ao alterar, os relatórios são atualizados</small>
+      </label>
+    </div>
+
+    <div class="grid2">
+      <fieldset class="card up" id="box-pbf">
+        <legend>Sistema Presença</legend>
+        <p class="lead">Relatório <b>Estudante PBF</b> com os alunos de situação <b>NLOC – Aluno não localizado</b>. O arquivo é lido assim que você o escolhe ou arrasta.</p>
+        <label class="drop" for="file-pbf" data-drop="pbf">
+          <input id="file-pbf" type="file" accept=".csv,text/csv" hidden>
+          <span class="drop-ico" aria-hidden="true">⇪</span>
+          <span class="drop-txt"><b>Escolher arquivo .csv</b> ou arraste até aqui</span>
+          <span class="drop-file" data-file="pbf"></span>
+        </label>
+        <div class="mini" data-mini="pbf" hidden><div class="mini-bar"></div></div>
+        <div class="status" data-status="pbf" aria-live="polite"></div>
+        <div class="row-actions">
+          <a class="btn link" href="/api/modelo/pbf.csv" download>⬇ Baixar modelo .csv</a>
+        </div>
+        <div class="hint">
+          <b>Colunas lidas pelo nome</b> (a ordem não importa):<br>
+          Obrigatórias: <code>NIS</code>, <code>Nome do Aluno</code>, <code>Data de Nascimento</code>, <code>Nome do Responsável</code>.<br>
+          Opcionais: <code>Situação</code>, <code>UF</code>, <code>Município</code>, <code>INEP</code>, <code>Escola</code>, <code>Dependência</code>, <code>Série do Estudante</code>.<br>
+          As linhas de título acima do cabeçalho são ignoradas.
+        </div>
+      </fieldset>
+
+      <fieldset class="card up" id="box-ge">
+        <legend>Gestor Escolar</legend>
+        <p class="lead">Relatório de <b>alunos com matrícula ativa</b> no município.</p>
+        <label class="drop" for="file-ge" data-drop="ge">
+          <input id="file-ge" type="file" accept=".csv,text/csv" hidden>
+          <span class="drop-ico" aria-hidden="true">⇪</span>
+          <span class="drop-txt"><b>Escolher arquivo .csv</b> ou arraste até aqui</span>
+          <span class="drop-file" data-file="ge"></span>
+        </label>
+        <div class="mini" data-mini="ge" hidden><div class="mini-bar"></div></div>
+        <div class="status" data-status="ge" aria-live="polite"></div>
+        <div class="row-actions">
+          <a class="btn link" href="/api/modelo/ge.csv" download>⬇ Baixar modelo .csv</a>
+        </div>
+        <div class="hint">
+          <b>Colunas lidas pelo nome</b> (colunas a mais são ignoradas):<br>
+          Obrigatórias: <code>ALUNOS</code>, <code>DATA DE NASCIMENTO</code>, <code>FILIAÇÃO1</code>.<br>
+          Recomendadas: <code>FILIAÇÃO2</code>, <code>TURMA</code>, <code>INEP ESCOLA</code>, <code>ESCOLA</code>.
+        </div>
+      </fieldset>
+    </div>
+
+    
+    <div id="resultado" hidden>
+      <h2 class="h2">Resultado do cruzamento</h2>
+      <div class="stats">
+        <div class="stat"><span class="v" id="s-pbf">–</span><span class="l">Não localizados no Sistema Presença</span></div>
+        <div class="stat"><span class="v" id="s-ge">–</span><span class="l">Matrículas no Gestor Escolar</span></div>
+        <div class="stat ok"><span class="v" id="s-loc">–</span><span class="l">Alunos localizados <em id="s-pct"></em></span></div>
+        <div class="stat warn"><span class="v" id="s-nao">–</span><span class="l">Continuam não localizados</span></div>
+      </div>
+      <div class="card">
+        <h3 class="h3">Localizados por regra de busca</h3>
+        <ul class="rules" id="rules"></ul>
+        <p class="muted" id="varias" hidden></p>
+        <p class="muted" id="meta-info"></p>
+      </div>
+            <div class="go">
+        <button class="btn primary" data-go="localizados" type="button">Ver alunos localizados</button>
+        <button class="btn" data-go="nao-localizados" type="button">Ver não localizados</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABAS DE DADOS (montadas via JS) ============ -->
+  <section id="panel-lista" class="panel" role="tabpanel" hidden>
+    <div class="toolbar">
+      <div class="search">
+        <input id="q" type="search" placeholder="Buscar por nome, NIS, filiação, escola…" aria-label="Buscar">
+      </div>
+      <div class="btns">
+        <button class="btn" id="b-ver" type="button">👁 Visualizar</button>
+        <button class="btn primary" id="b-pdf" type="button">⬇ Baixar PDF</button>
+        <button class="btn" id="b-csv" type="button">⬇ CSV</button>
+        <button class="btn" id="b-print" type="button">🖶 Imprimir</button>
+      </div>
+    </div>
+    <p id="legenda" class="muted legend" hidden></p>
+    <div class="tablewrap" id="tablewrap" tabindex="0" aria-label="Tabela de registros"></div>
+    <div class="pager">
+      <div class="count">Quantidade de registros: <b id="cnt">0</b> <span id="cnt-f" class="muted"></span></div>
+      <div class="pg">
+        <label class="per">Por página
+          <select id="per"><option>25</option><option selected>50</option><option>100</option><option>200</option></select>
+        </label>
+        <button class="btn sm" id="p-prev" type="button" aria-label="Página anterior">‹</button>
+        <span id="p-info">1 / 1</span>
+        <button class="btn sm" id="p-next" type="button" aria-label="Próxima página">›</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<footer class="foot">Localiza Aluno · versão <b id="versao">…</b> · os arquivos são processados em memória e descartados após o uso.<br>Desenvolvido por <a href="https://github.com/andersonneto" target="_blank" rel="noopener"><strong>Anderson Marques Neto</strong></a></footer>
+
+<!-- Visualização do PDF -->
+<dialog id="viewer">
+  <div class="vbar">
+    <strong id="v-title">Relatório</strong>
+    <span class="grow"></span>
+    <a class="btn sm" id="v-open" target="_blank" rel="noopener">Abrir em nova aba</a>
+    <a class="btn sm primary" id="v-down">⬇ Baixar</a>
+    <button class="btn sm" id="v-close" type="button" aria-label="Fechar">✕</button>
+  </div>
+  <iframe id="v-frame" title="Pré-visualização do relatório"></iframe>
+</dialog>
+
+<script src="/app.js"></script>
+</body>
+</html>

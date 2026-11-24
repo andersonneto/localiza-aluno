@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Configuração local / segredos
+.env
+.env.*
+!.env.example
+
+# Dados reais (contêm dados pessoais de crianças) — nunca versionar
+samples/*
+!samples/.gitkeep
+*.csv
+!tests/**/*.csv
+
+# Editores / SO
+.vscode/
+.idea/
+nbproject/
+.claude/settings.local.json
+Thumbs.db
+.DS_Store
