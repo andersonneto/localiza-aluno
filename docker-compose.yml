@@ -5,20 +5,24 @@ services:
     container_name: localiza-aluno
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-8090}:8000"   # porta no servidor: defina APP_PORT no .env (padrão 8090)
+      - "${APP_PORT:-8090}:8000"   # porta no servidor (padrão 8090)
+    # Todos os valores abaixo podem ser definidos num arquivo .env ao lado deste
+    # (veja .env.example) ou nas "Environment variables" da stack no Portainer.
+    # O .env NUNCA vai para o repositório: é lá que ficam as senhas.
     environment:
-      TZ_NAME: America/Belem
-      SESSION_TTL_MIN: "60"  # minutos até descartar os dados da memória
-      MAX_UPLOAD_MB: "40"
-      # Proteção opcional por usuário/senha (recomendado se o acesso for pela internet):
-      # APP_USER: "secretaria"
-      # APP_PASSWORD: "troque-esta-senha"
+      TZ_NAME: ${TZ_NAME:-America/Belem}
+      SESSION_TTL_MIN: ${SESSION_TTL_MIN:-60}   # minutos até descartar os dados da memória
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-40}
+
+      # Proteção opcional por usuário/senha (vazio = sem senha)
+      APP_USER: ${APP_USER:-}
+      APP_PASSWORD: ${APP_PASSWORD:-}
 
       # Aviso por e-mail ao administrador quando uma importação falha (só dados técnicos, nunca dados de alunos).
-      # NÃO grave a senha neste arquivo se ele for para um repositório: use o campo "Environment variables" da stack no Portainer.
-      # Gmail exige "Senha de app" (conta com verificação em 2 etapas), não a senha normal.
-      # SMTP_HOST: smtp.gmail.com
-      # SMTP_PORT: "587"
-      # SMTP_USER: "localizaaluno@xinguara.pa.gov.br"
-      # SMTP_PASSWORD: "${SMTP_PASSWORD}"
-      # ADMIN_EMAIL: "quem-recebe-os-avisos@xinguara.pa.gov.br"
+      # Sem SMTP_PASSWORD o aviso fica desativado. Gmail exige "Senha de app" (verificação em 2 etapas).
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURITY: ${SMTP_SECURITY:-starttls}
+      SMTP_USER: ${SMTP_USER:-localizaaluno@xinguara.pa.gov.br}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
