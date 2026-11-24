@@ -6,7 +6,7 @@ Cruza os **alunos não localizados** do Sistema Presença (PBF) com as **matríc
 **Por linha de comando**
 ```bash
 unzip localiza-aluno.zip && cd localiza-aluno
-docker compose up -d --build        # abre em http://SERVIDOR:8080
+docker compose up -d --build        # abre em http://SERVIDOR:8090 (porta definida por APP_PORT no .env)
 ```
 **Pelo Portainer**: envie esta pasta para um repositório Git e use *Stacks → Add stack → Repository* (compose path `docker-compose.yml`); ou, no servidor, rode `docker build -t localiza-aluno .` e crie a stack com `image: localiza-aluno:latest` (sem `build`).
 

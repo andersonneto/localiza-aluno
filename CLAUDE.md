@@ -22,7 +22,7 @@ pip install -r requirements.txt pytest
 pytest                                   # all tests
 pytest tests/test_engine.py::test_avisos_com_numero_da_linha   # single test
 uvicorn app.main:app --reload --port 8000                       # dev server (http://localhost:8000)
-docker compose up -d --build                                    # production-like, http://localhost:8080
+docker compose up -d --build                                    # production-like, http://localhost:8090
 ```
 
 There is no linter or formatter configured.

@@ -5,7 +5,7 @@ services:
     container_name: localiza-aluno
     restart: unless-stopped
     ports:
-      - "8080:8000"          # troque 8080 pela porta desejada
+      - "${APP_PORT:-8090}:8000"   # porta no servidor: defina APP_PORT no .env (padrão 8090)
     environment:
       TZ_NAME: America/Belem
       SESSION_TTL_MIN: "60"  # minutos até descartar os dados da memória
